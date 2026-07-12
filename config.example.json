@@ -1,0 +1,12 @@
+{
+  "database": "posts.db",
+  "platforms": {
+    "mastodon": {
+      "api_base_url": "https://mastodon.social",
+      "timeout": 30
+    },
+    "twitter": {
+      "timeout": 30
+    }
+  }
+}

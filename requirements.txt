@@ -1,0 +1,8 @@
+# Core runtime needs nothing beyond the Python standard library.
+# The dependencies below are OPTIONAL and only required for certain features:
+
+# Publish to live networks (Twitter/X, Mastodon):
+requests>=2.25
+
+# Use YAML config files instead of JSON:
+pyyaml>=5.4
