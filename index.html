@@ -29,8 +29,36 @@
     --hl-tag: #22526b;
     --hl-attr: #b95000;
     --hl-type: #0a6b74;
+    --topbar-bg: linear-gradient(135deg, #005f73 0%, #0a9396 100%);
   }
-  html[data-theme="dark"] {
+  /* ברירת מחדל: העדפת המערכת. בחירה מפורשת מסומנת ב-data-theme וגוברת. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10171b;
+      --panel: #182126;
+      --panel-2: #1f2a30;
+      --text: #e6edf1;
+      --muted: #9bb0ba;
+      --brand: #62c4c9;
+      --brand-2: #94d2bd;
+      --accent: #0a9396;
+      --danger: #e5675c;
+      --danger-2: #c1443a;
+      --border: #2a373f;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+      --code-bg: #121a1f;
+      --btn-fg: #06232a;
+      --hl-key: #d3a0e0;
+      --hl-str: #8fd694;
+      --hl-num: #f0a868;
+      --hl-com: #7b8f99;
+      --hl-tag: #7fc4dd;
+      --hl-attr: #f0a868;
+      --hl-type: #94d2bd;
+      --topbar-bg: linear-gradient(135deg, #0d2b33 0%, #12403f 100%);
+    }
+  }
+  :root[data-theme="dark"] {
     --bg: #10171b;
     --panel: #182126;
     --panel-2: #1f2a30;
@@ -52,6 +80,7 @@
     --hl-tag: #7fc4dd;
     --hl-attr: #f0a868;
     --hl-type: #94d2bd;
+    --topbar-bg: linear-gradient(135deg, #0d2b33 0%, #12403f 100%);
   }
 
   * { box-sizing: border-box; }
@@ -69,12 +98,9 @@
   /* ---------- Layout ---------- */
   .topbar {
     position: sticky; top: 0; z-index: 20;
-    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+    background: var(--topbar-bg);
     color: #fff;
     box-shadow: 0 2px 12px rgba(0,0,0,.12);
-  }
-  html[data-theme="dark"] .topbar {
-    background: linear-gradient(135deg, #0d2b33 0%, #12403f 100%);
   }
   .topbar-inner {
     max-width: 960px; margin: 0 auto; padding: 14px 18px;
@@ -588,20 +614,33 @@ function copyText(text) {
 /* =========================================================
    מצב תצוגה (כהה / בהיר)
    ========================================================= */
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+function systemPrefersDark() {
+  return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+}
+/** המצב שבו הדף מוצג בפועל — סימון מפורש אם יש, אחרת העדפת המערכת. */
+function effectiveTheme() {
+  const stamped = document.documentElement.getAttribute('data-theme');
+  if (stamped === 'dark' || stamped === 'light') return stamped;
+  return systemPrefersDark() ? 'dark' : 'light';
+}
+function syncThemeButton() {
+  document.getElementById('themeBtn').textContent = effectiveTheme() === 'dark' ? '☀️' : '🌙';
 }
 function initTheme() {
   let saved = null;
   try { saved = localStorage.getItem(KEYS.theme); } catch (e) {}
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+  // בלי בחירה שמורה לא מסמנים כלום, כדי שהעדפת המערכת תקבע.
+  if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+  syncThemeButton();
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').addEventListener) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncThemeButton);
+  }
 }
 document.getElementById('themeBtn').addEventListener('click', () => {
-  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  applyTheme(next);
+  const next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
   try { localStorage.setItem(KEYS.theme, next); } catch (e) {}
+  syncThemeButton();
 });
 
 /* =========================================================
