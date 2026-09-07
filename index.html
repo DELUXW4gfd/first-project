@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="אתר בית ספרי — ספריית קוד אישית ולוח שאלות ותשובות" />
+<title>אתר בית ספרי</title>
+<style>
+  :root {
+    --bg: #eef2f5;
+    --panel: #ffffff;
+    --panel-2: #f4f7f9;
+    --text: #12232a;
+    --muted: #5f7480;
+    --brand: #005f73;
+    --brand-2: #0a9396;
+    --accent: #94d2bd;
+    --danger: #c1443a;
+    --danger-2: #a53328;
+    --border: #dbe4ea;
+    --shadow: 0 1px 2px rgba(10,30,40,.06), 0 10px 30px rgba(10,30,40,.07);
+    --radius: 14px;
+    --code-bg: #f6f8fa;
+    --btn-fg: #ffffff;
+    --hl-key: #a626a4;
+    --hl-str: #22863a;
+    --hl-num: #b95000;
+    --hl-com: #7c8b93;
+    --hl-tag: #22526b;
+    --hl-attr: #b95000;
+    --hl-type: #0a6b74;
+  }
+  html[data-theme="dark"] {
+    --bg: #10171b;
+    --panel: #182126;
+    --panel-2: #1f2a30;
+    --text: #e6edf1;
+    --muted: #9bb0ba;
+    --brand: #62c4c9;
+    --brand-2: #94d2bd;
+    --accent: #0a9396;
+    --danger: #e5675c;
+    --danger-2: #c1443a;
+    --border: #2a373f;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    --code-bg: #121a1f;
+    --btn-fg: #06232a;
+    --hl-key: #d3a0e0;
+    --hl-str: #8fd694;
+    --hl-num: #f0a868;
+    --hl-com: #7b8f99;
+    --hl-tag: #7fc4dd;
+    --hl-attr: #f0a868;
+    --hl-type: #94d2bd;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Rubik, "Noto Sans Hebrew", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ---------- Layout ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,.12);
+  }
+  html[data-theme="dark"] .topbar {
+    background: linear-gradient(135deg, #0d2b33 0%, #12403f 100%);
+  }
+  .topbar-inner {
+    max-width: 960px; margin: 0 auto; padding: 14px 18px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; margin-inline-end: auto; min-width: 0; }
+  .brand h1 { font-size: 20px; margin: 0; font-weight: 700; letter-spacing: -.2px; }
+  .brand .logo {
+    width: 36px; height: 36px; flex: none; border-radius: 10px;
+    background: rgba(255,255,255,.18); display: grid; place-items: center;
+    font-size: 19px;
+  }
+  .userchip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.16); border-radius: 999px;
+    padding: 5px 6px 5px 12px; font-size: 14px; max-width: 100%;
+  }
+  .userchip .avatar {
+    width: 26px; height: 26px; border-radius: 50%; flex: none;
+    background: var(--accent); color: #06343a;
+    display: grid; place-items: center; font-weight: 700; font-size: 13px;
+  }
+  .userchip .uname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px; }
+
+  @media (max-width: 430px) {
+    .topbar-inner { gap: 8px; padding: 12px 14px; }
+    .brand h1 { font-size: 17px; }
+    .brand .logo { width: 30px; height: 30px; font-size: 16px; }
+    button.icon { width: 34px; height: 34px; font-size: 15px; }
+    .userchip { padding: 4px 5px 4px 10px; font-size: 13px; }
+    .userchip .avatar { width: 22px; height: 22px; font-size: 12px; }
+    .userchip .uname { max-width: 74px; }
+    .card { padding: 18px 16px; }
+  }
+  /* מסכים צרים מאוד: משאירים רק את האות הראשונה של שם המשתמש */
+  @media (max-width: 350px) { .userchip .uname { display: none; } .userchip { padding: 4px; } }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 22px 18px 60px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+  .card > h2 { margin-top: 0; }
+
+  h2 { font-size: 20px; color: var(--text); margin: 0 0 4px; font-weight: 700; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+
+  /* ---------- Forms ---------- */
+  label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text); }
+  input[type=text], input[type=password], textarea, select {
+    width: 100%; padding: 11px 13px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--panel-2); color: var(--text);
+    font-size: 15px; font-family: inherit;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  textarea {
+    min-height: 190px; resize: vertical;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", monospace;
+    font-size: 14px; line-height: 1.55;
+    direction: ltr; text-align: left;
+    white-space: pre; overflow-x: auto; tab-size: 2;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none; border-color: var(--brand-2);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-2) 22%, transparent);
+  }
+  .field { margin-bottom: 16px; }
+  .row { display: grid; gap: 16px; }
+  @media (min-width: 620px) { .row.two { grid-template-columns: 1fr 200px; } }
+
+  button {
+    font: inherit; font-weight: 600; cursor: pointer;
+    border: 1px solid transparent; border-radius: 10px;
+    padding: 11px 20px; font-size: 15px;
+    background: var(--brand); color: var(--btn-fg);
+    transition: background .18s, transform .06s, opacity .18s;
+  }
+  button:hover { background: var(--brand-2); }
+  button:active { transform: translateY(1px); }
+  button.ghost {
+    background: transparent; color: var(--text);
+    border-color: var(--border);
+  }
+  button.ghost:hover { background: var(--panel-2); }
+  button.danger { background: transparent; color: var(--danger); border-color: var(--border); }
+  button.danger:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+  button.small { padding: 6px 12px; font-size: 13px; border-radius: 8px; }
+  button.icon {
+    background: rgba(255,255,255,.16); color: #fff; border: none;
+    width: 38px; height: 38px; padding: 0; border-radius: 10px;
+    display: grid; place-items: center; font-size: 17px;
+  }
+  button.icon:hover { background: rgba(255,255,255,.28); }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+  .linkbtn {
+    background: none; border: none; padding: 0; color: var(--brand);
+    font-weight: 600; cursor: pointer; font-size: inherit; text-decoration: underline;
+  }
+  .linkbtn:hover { background: none; opacity: .8; }
+
+  /* ---------- Tabs ---------- */
+  .tabs { display: flex; gap: 6px; margin-bottom: 20px; background: var(--panel); padding: 6px;
+          border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+  .tabs button {
+    flex: 1; background: transparent; color: var(--muted);
+    border: 1px solid transparent; border-radius: 8px; padding: 10px 8px; font-size: 15px;
+  }
+  .tabs button:hover { background: var(--panel-2); color: var(--text); }
+  .tabs button[aria-selected="true"] { background: var(--brand); color: var(--btn-fg); }
+
+  /* ---------- Items ---------- */
+  .list { display: flex; flex-direction: column; gap: 14px; }
+  .item {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
+  }
+  .item-head { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .item-title { font-weight: 700; font-size: 16px; margin: 0; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .meta { color: var(--muted); font-size: 13px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .badge {
+    display: inline-block; font-size: 12px; font-weight: 600;
+    padding: 2px 9px; border-radius: 999px;
+    background: var(--panel-2); border: 1px solid var(--border); color: var(--muted);
+  }
+  .badge.mine { background: color-mix(in srgb, var(--brand-2) 18%, transparent); color: var(--brand); border-color: transparent; }
+
+  pre.code {
+    margin: 0; background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px; overflow-x: auto;
+    direction: ltr; text-align: left;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", monospace;
+    font-size: 13.5px; line-height: 1.6; tab-size: 2;
+    max-height: 420px; overflow-y: auto;
+  }
+  pre.code span { unicode-bidi: isolate; }
+  .hl-key { color: var(--hl-key); font-weight: 600; }
+  .hl-str { color: var(--hl-str); }
+  .hl-num { color: var(--hl-num); }
+  .hl-com { color: var(--hl-com); font-style: italic; }
+  .hl-tag { color: var(--hl-tag); font-weight: 600; }
+  .hl-attr { color: var(--hl-attr); }
+  .hl-type { color: var(--hl-type); }
+
+  .answers { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .answer {
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; font-size: 15px; overflow-wrap: anywhere;
+  }
+  .answer .meta { margin-top: 4px; }
+  .answer-form { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .answer-form input { flex: 1; min-width: 200px; }
+
+  .empty {
+    text-align: center; color: var(--muted); padding: 34px 18px;
+    border: 1px dashed var(--border); border-radius: var(--radius); background: var(--panel);
+  }
+  .empty .big { font-size: 30px; display: block; margin-bottom: 6px; }
+
+  .toolbar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+  .toolbar input { flex: 1; min-width: 180px; }
+  .count { color: var(--muted); font-size: 14px; }
+
+  /* ---------- Toast ---------- */
+  #toast {
+    position: fixed; bottom: 22px; left: 0; right: 0;
+    width: fit-content; margin: 0 auto; transform: translateY(20px);
+    background: var(--text); color: var(--bg);
+    padding: 12px 20px; border-radius: 10px; font-size: 15px; font-weight: 600;
+    box-shadow: 0 8px 30px rgba(0,0,0,.28);
+    opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 60;
+    max-width: min(92vw, 460px); text-align: center;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+  #toast.err { background: var(--danger); color: #fff; }
+
+  .hidden { display: none !important; }
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 0 18px 30px; }
+  .hint { font-size: 13px; color: var(--muted); margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">📘</span>
+      <h1>אתר בית ספרי</h1>
+    </div>
+    <span id="userChip" class="userchip hidden">
+      <span class="avatar" id="userAvatar"></span>
+      <span class="uname" id="currentUser"></span>
+    </span>
+    <button class="icon" id="themeBtn" type="button" title="מצב כהה / בהיר" aria-label="החלף מצב תצוגה">🌙</button>
+    <button class="icon hidden" id="logoutBtn" type="button" title="התנתק" aria-label="התנתק">⎋</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ===== Auth ===== -->
+  <section id="authView" class="card hidden" style="max-width:460px;margin-inline:auto;">
+    <div class="tabs" role="tablist">
+      <button type="button" id="tabLogin" role="tab" aria-selected="true">התחברות</button>
+      <button type="button" id="tabSignup" role="tab" aria-selected="false">הרשמה</button>
+    </div>
+
+    <form id="loginForm" autocomplete="on">
+      <h2>ברוך/ה השב/ה</h2>
+      <p class="sub">התחבר/י כדי לראות את הקודים שלך ואת לוח השאלות.</p>
+      <div class="field">
+        <label for="loginUsername">שם משתמש</label>
+        <input type="text" id="loginUsername" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="loginPassword">סיסמה</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" />
+      </div>
+      <div class="actions">
+        <button type="submit">התחבר</button>
+        <span class="count">אין לך חשבון? <button type="button" class="linkbtn" id="goSignup">הרשמה</button></span>
+      </div>
+    </form>
+
+    <form id="signupForm" class="hidden" autocomplete="on">
+      <h2>יצירת חשבון</h2>
+      <p class="sub">החשבון נשמר רק בדפדפן הזה. הסיסמה נשמרת כגיבוב (hash) עם מלח אקראי — לא כטקסט גלוי.</p>
+      <div class="field">
+        <label for="signupUsername">שם משתמש</label>
+        <input type="text" id="signupUsername" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="signupPassword">סיסמה</label>
+        <input type="password" id="signupPassword" autocomplete="new-password" />
+        <p class="hint">לפחות 4 תווים.</p>
+      </div>
+      <div class="field">
+        <label for="signupPasswordConfirm">אישור סיסמה</label>
+        <input type="password" id="signupPasswordConfirm" autocomplete="new-password" />
+      </div>
+      <div class="actions">
+        <button type="submit">הרשם</button>
+        <span class="count">כבר רשום? <button type="button" class="linkbtn" id="goLogin">התחברות</button></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- ===== App ===== -->
+  <main id="appView" class="hidden">
+    <div class="tabs" role="tablist">
+      <button type="button" id="tabCodes" role="tab" aria-selected="true">הקודים שלי</button>
+      <button type="button" id="tabQuestions" role="tab" aria-selected="false">שאלות ותשובות</button>
+    </div>
+
+    <!-- Codes -->
+    <section id="panelCodes">
+      <div class="card">
+        <h2 id="codeFormTitle">הוספת קוד</h2>
+        <p class="sub">הקודים שלך פרטיים — רק המשתמש שלך רואה ומוחק אותם.</p>
+        <form id="codeForm">
+          <div class="row two">
+            <div class="field">
+              <label for="exerciseInput">שם התרגיל</label>
+              <input type="text" id="exerciseInput" placeholder="למשל: תרגיל 4 — לולאות" />
+            </div>
+            <div class="field">
+              <label for="langInput">שפה</label>
+              <select id="langInput">
+                <option value="auto">זיהוי אוטומטי</option>
+                <option value="java">Java</option>
+                <option value="html">HTML</option>
+                <option value="plain">אחר / טקסט</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="codeInput">הקוד</label>
+            <textarea id="codeInput" spellcheck="false" placeholder="הדבק כאן קוד Java או HTML..."></textarea>
+          </div>
+          <div class="actions">
+            <button type="submit" id="codeSubmitBtn">שמור קוד</button>
+            <button type="button" class="ghost hidden" id="codeCancelBtn">ביטול עריכה</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="toolbar">
+        <input type="text" id="codeSearch" placeholder="חיפוש לפי שם תרגיל או תוכן הקוד..." />
+        <span class="count" id="codeCount"></span>
+      </div>
+      <div class="list" id="codeList"></div>
+    </section>
+
+    <!-- Questions -->
+    <section id="panelQuestions" class="hidden">
+      <div class="card">
+        <h2>שאלה חדשה</h2>
+        <p class="sub">לוח משותף — כולם רואים את השאלות ויכולים לענות. מחיקה אפשרית רק למי שכתב.</p>
+        <form id="questionForm">
+          <div class="field">
+            <label for="questionInput">השאלה שלך</label>
+            <input type="text" id="questionInput" placeholder="למשל: מה ההבדל בין while ל-for?" />
+          </div>
+          <div class="actions"><button type="submit">פרסם שאלה</button></div>
+        </form>
+      </div>
+
+      <div class="toolbar">
+        <input type="text" id="questionSearch" placeholder="חיפוש בשאלות ובתשובות..." />
+        <button type="button" class="ghost small" id="onlyMineBtn" aria-pressed="false">רק השאלות שלי</button>
+        <span class="count" id="questionCount"></span>
+      </div>
+      <div class="list" id="questionsList"></div>
+    </section>
+  </main>
+</div>
+
+<footer>הנתונים נשמרים מקומית בדפדפן שלך (localStorage) ולא נשלחים לשום שרת.</footer>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   SHA-256 (טהור JS) — כדי שסיסמאות לא יישמרו כטקסט גלוי,
+   גם כשהדף נפתח מקובץ מקומי (file://) בלי crypto.subtle.
+   ========================================================= */
+const SHA_K = new Uint32Array([
+  0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+  0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+  0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+  0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+  0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+  0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+  0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+  0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+]);
+
+function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+
+function sha256Hex(message) {
+  const bytes = Array.from(new TextEncoder().encode(message));
+  const bitLen = bytes.length * 8;
+  bytes.push(0x80);
+  while (bytes.length % 64 !== 56) bytes.push(0);
+  const hi = Math.floor(bitLen / 4294967296);
+  const lo = bitLen >>> 0;
+  bytes.push((hi >>> 24) & 255, (hi >>> 16) & 255, (hi >>> 8) & 255, hi & 255,
+             (lo >>> 24) & 255, (lo >>> 16) & 255, (lo >>> 8) & 255, lo & 255);
+
+  const H = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,
+                             0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]);
+  const w = new Uint32Array(64);
+
+  for (let i = 0; i < bytes.length; i += 64) {
+    for (let t = 0; t < 16; t++) {
+      w[t] = (bytes[i + 4*t] << 24) | (bytes[i + 4*t + 1] << 16) |
+             (bytes[i + 4*t + 2] << 8) | bytes[i + 4*t + 3];
+    }
+    for (let t = 16; t < 64; t++) {
+      const s0 = rotr(w[t-15], 7) ^ rotr(w[t-15], 18) ^ (w[t-15] >>> 3);
+      const s1 = rotr(w[t-2], 17) ^ rotr(w[t-2], 19) ^ (w[t-2] >>> 10);
+      w[t] = (w[t-16] + s0 + w[t-7] + s1) >>> 0;
+    }
+    let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+    for (let t = 0; t < 64; t++) {
+      const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+      const ch = (e & f) ^ (~e & g);
+      const t1 = (h + S1 + ch + SHA_K[t] + w[t]) >>> 0;
+      const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const t2 = (S0 + maj) >>> 0;
+      h = g; g = f; f = e; e = (d + t1) >>> 0;
+      d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0;
+    H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0;
+    H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+  }
+  return Array.from(H).map(x => x.toString(16).padStart(8, '0')).join('');
+}
+
+function randomSalt() {
+  const a = new Uint8Array(16);
+  (window.crypto || window.msCrypto).getRandomValues(a);
+  return Array.from(a).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** גיבוב איטי-יחסית (מספר סבבים) כדי להקשות על ניחוש סיסמאות. */
+function hashPassword(password, salt) {
+  let h = salt + '|' + password;
+  for (let i = 0; i < 2000; i++) h = sha256Hex(h + salt);
+  return h;
+}
+
+/* =========================================================
+   עזרי אחסון + כלים כלליים
+   ========================================================= */
+const KEYS = { users: 'users', codes: 'savedCodes', questions: 'questions',
+               session: 'loggedInUser', theme: 'theme' };
+
+function read(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+  catch (e) { return fallback; }
+}
+function write(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+  catch (e) { toast('שמירה נכשלה — ייתכן שאחסון הדפדפן מלא', true); return false; }
+}
+
+let toastTimer = null;
+function toast(message, isError) {
+  const el = document.getElementById('toast');
+  el.textContent = message;
+  el.classList.toggle('err', !!isError);
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function formatDate(ts) {
+  if (!ts) return '';
+  try {
+    return new Date(ts).toLocaleString('he-IL',
+      { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  } catch (e) { return ''; }
+}
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined && text !== null) node.textContent = text;
+  return node;
+}
+
+/* =========================================================
+   הדגשת תחביר — טוקניזציה בטוחה (בלי innerHTML)
+   ========================================================= */
+const JAVA_KEYWORDS = new Set(('abstract assert boolean break byte case catch char class const continue ' +
+  'default do double else enum extends final finally float for goto if implements import instanceof int ' +
+  'interface long native new package private protected public return short static strictfp super switch ' +
+  'synchronized this throw throws transient try var void volatile while record sealed true false null')
+  .split(' '));
+
+const JAVA_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|(\b\d[\w.]*\b)|([A-Za-z_$][\w$]*)/g;
+const HTML_RE = /(<!--[\s\S]*?-->)|(<\/?[A-Za-z][\w:-]*|\/?>)|("(?:[^"]*)"|'(?:[^']*)')|([A-Za-z_:][\w:.-]*)(?=\s*=)/g;
+
+function detectLanguage(code) {
+  if (/<\/?[a-z!][\w:-]*[\s>/]/i.test(code)) return 'html';
+  if (/\b(class|public|private|void|static|import|System\.out)\b/.test(code)) return 'java';
+  return 'plain';
+}
+
+function highlightInto(pre, code, lang) {
+  if (lang === 'auto' || !lang) lang = detectLanguage(code);
+  if (lang === 'plain') { pre.textContent = code; return; }
+
+  const re = lang === 'html' ? HTML_RE : JAVA_RE;
+  re.lastIndex = 0;
+  let last = 0, m;
+  while ((m = re.exec(code)) !== null) {
+    if (m.index > last) pre.appendChild(document.createTextNode(code.slice(last, m.index)));
+    let cls = null;
+    if (lang === 'html') {
+      if (m[1]) cls = 'hl-com';
+      else if (m[2]) cls = 'hl-tag';
+      else if (m[3]) cls = 'hl-str';
+      else if (m[4]) cls = 'hl-attr';
+    } else {
+      if (m[1]) cls = 'hl-com';
+      else if (m[2]) cls = 'hl-str';
+      else if (m[3]) cls = 'hl-num';
+      else if (m[4]) {
+        if (JAVA_KEYWORDS.has(m[4])) cls = 'hl-key';
+        else if (/^[A-Z]/.test(m[4])) cls = 'hl-type';
+      }
+    }
+    if (cls) pre.appendChild(el('span', cls, m[0]));
+    else pre.appendChild(document.createTextNode(m[0]));
+    last = m.index + m[0].length;
+  }
+  if (last < code.length) pre.appendChild(document.createTextNode(code.slice(last)));
+}
+
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text)
+      .then(() => toast('הקוד הועתק'))
+      .catch(() => toast('ההעתקה נכשלה', true));
+    return;
+  }
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); toast('הקוד הועתק'); }
+  catch (e) { toast('ההעתקה נכשלה', true); }
+  document.body.removeChild(ta);
+}
+
+/* =========================================================
+   מצב תצוגה (כהה / בהיר)
+   ========================================================= */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem(KEYS.theme); } catch (e) {}
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+}
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem(KEYS.theme, next); } catch (e) {}
+});
+
+/* =========================================================
+   משתמשים והתחברות
+   ========================================================= */
+let currentUser = null;
+
+function getUsers() {
+  const users = read(KEYS.users, []);
+  return Array.isArray(users) ? users : [];
+}
+
+function findUser(username) {
+  const wanted = username.toLowerCase();
+  return getUsers().find(u => String(u.username).toLowerCase() === wanted) || null;
+}
+
+function signup(username, password, confirm) {
+  if (!username || !password || !confirm) { toast('יש למלא את כל השדות', true); return; }
+  if (username.length > 24) { toast('שם המשתמש ארוך מדי (עד 24 תווים)', true); return; }
+  if (password.length < 4) { toast('הסיסמה חייבת להיות באורך 4 תווים לפחות', true); return; }
+  if (password !== confirm) { toast('הסיסמאות אינן תואמות', true); return; }
+  if (findUser(username)) { toast('שם המשתמש כבר תפוס', true); return; }
+
+  const salt = randomSalt();
+  const users = getUsers();
+  users.push({ username, salt, hash: hashPassword(password, salt), createdAt: Date.now() });
+  if (!write(KEYS.users, users)) return;
+  toast('ההרשמה הצליחה — אפשר להתחבר');
+  showLogin();
+  document.getElementById('loginUsername').value = username;
+  document.getElementById('loginPassword').focus();
+}
+
+function login(username, password) {
+  if (!username || !password) { toast('יש למלא שם משתמש וסיסמה', true); return; }
+  const user = findUser(username);
+  if (!user) { toast('שם משתמש או סיסמה שגויים', true); return; }
+
+  let ok;
+  if (user.hash) {
+    ok = hashPassword(password, user.salt) === user.hash;
+  } else {
+    // חשבון ישן שנשמר עם סיסמה גלויה — מאמתים ומשדרגים לגיבוב.
+    ok = user.password === password;
+    if (ok) {
+      const users = getUsers();
+      const target = users.find(u => u.username === user.username);
+      target.salt = randomSalt();
+      target.hash = hashPassword(password, target.salt);
+      delete target.password;
+      write(KEYS.users, users);
+    }
+  }
+  if (!ok) { toast('שם משתמש או סיסמה שגויים', true); return; }
+
+  currentUser = user.username;
+  try { localStorage.setItem(KEYS.session, currentUser); } catch (e) {}
+  document.getElementById('loginPassword').value = '';
+  enterApp();
+  toast('שלום, ' + currentUser);
+}
+
+function logout() {
+  currentUser = null;
+  cancelCodeEdit();
+  try { localStorage.removeItem(KEYS.session); } catch (e) {}
+  document.getElementById('appView').classList.add('hidden');
+  document.getElementById('userChip').classList.add('hidden');
+  document.getElementById('logoutBtn').classList.add('hidden');
+  showLogin();
+}
+
+function enterApp() {
+  document.getElementById('authView').classList.add('hidden');
+  document.getElementById('appView').classList.remove('hidden');
+  document.getElementById('currentUser').textContent = currentUser;
+  document.getElementById('userAvatar').textContent = currentUser.charAt(0).toUpperCase();
+  document.getElementById('userChip').classList.remove('hidden');
+  document.getElementById('logoutBtn').classList.remove('hidden');
+  renderCodes();
+  renderQuestions();
+}
+
+function showLogin() {
+  document.getElementById('authView').classList.remove('hidden');
+  document.getElementById('loginForm').classList.remove('hidden');
+  document.getElementById('signupForm').classList.add('hidden');
+  document.getElementById('tabLogin').setAttribute('aria-selected', 'true');
+  document.getElementById('tabSignup').setAttribute('aria-selected', 'false');
+}
+function showSignup() {
+  document.getElementById('authView').classList.remove('hidden');
+  document.getElementById('signupForm').classList.remove('hidden');
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('tabSignup').setAttribute('aria-selected', 'true');
+  document.getElementById('tabLogin').setAttribute('aria-selected', 'false');
+}
+
+/* =========================================================
+   קודים — פרטיים לכל משתמש
+   ========================================================= */
+let editingCodeId = null;
+
+function getCodes() {
+  const codes = read(KEYS.codes, []);
+  return Array.isArray(codes) ? codes : [];
+}
+function myCodes() {
+  return getCodes().filter(c => c.owner === currentUser);
+}
+
+function submitCode() {
+  const exercise = document.getElementById('exerciseInput').value.trim();
+  const code = document.getElementById('codeInput').value;
+  const lang = document.getElementById('langInput').value;
+  if (!code.trim()) { toast('אין קוד לשמור', true); return; }
+
+  const codes = getCodes();
+  if (editingCodeId !== null) {
+    const item = codes.find(c => c.id === editingCodeId && c.owner === currentUser);
+    if (!item) { toast('הקוד לא נמצא', true); cancelCodeEdit(); return; }
+    item.exercise = exercise;
+    item.code = code;
+    item.lang = lang;
+    item.updatedAt = Date.now();
+    if (!write(KEYS.codes, codes)) return;
+    toast('הקוד עודכן');
+    cancelCodeEdit();
+  } else {
+    codes.push({ id: Date.now(), exercise, code, lang, owner: currentUser, createdAt: Date.now() });
+    if (!write(KEYS.codes, codes)) return;
+    toast('הקוד נשמר');
+    document.getElementById('exerciseInput').value = '';
+    document.getElementById('codeInput').value = '';
+    document.getElementById('langInput').value = 'auto';
+  }
+  renderCodes();
+}
+
+function startCodeEdit(item) {
+  editingCodeId = item.id;
+  document.getElementById('exerciseInput').value = item.exercise || '';
+  document.getElementById('codeInput').value = item.code;
+  document.getElementById('langInput').value = item.lang || 'auto';
+  document.getElementById('codeFormTitle').textContent = 'עריכת קוד';
+  document.getElementById('codeSubmitBtn').textContent = 'עדכן קוד';
+  document.getElementById('codeCancelBtn').classList.remove('hidden');
+  document.getElementById('codeForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function cancelCodeEdit() {
+  editingCodeId = null;
+  document.getElementById('codeFormTitle').textContent = 'הוספת קוד';
+  document.getElementById('codeSubmitBtn').textContent = 'שמור קוד';
+  document.getElementById('codeCancelBtn').classList.add('hidden');
+  document.getElementById('exerciseInput').value = '';
+  document.getElementById('codeInput').value = '';
+  document.getElementById('langInput').value = 'auto';
+}
+
+function deleteCode(id) {
+  if (!confirm('למחוק את הקוד הזה? הפעולה אינה הפיכה.')) return;
+  const remaining = getCodes().filter(c => !(c.id === id && c.owner === currentUser));
+  if (!write(KEYS.codes, remaining)) return;
+  if (editingCodeId === id) cancelCodeEdit();
+  toast('הקוד נמחק');
+  renderCodes();
+}
+
+function renderCodes() {
+  const list = document.getElementById('codeList');
+  const query = document.getElementById('codeSearch').value.trim().toLowerCase();
+  list.textContent = '';
+
+  const all = myCodes().sort((a, b) => (b.updatedAt || b.createdAt || b.id) - (a.updatedAt || a.createdAt || a.id));
+  const items = query
+    ? all.filter(c => (c.exercise || '').toLowerCase().includes(query) || c.code.toLowerCase().includes(query))
+    : all;
+
+  document.getElementById('codeCount').textContent =
+    all.length ? (query ? items.length + ' מתוך ' + all.length : all.length + ' קודים שמורים') : '';
+
+  if (!items.length) {
+    const empty = el('div', 'empty');
+    empty.appendChild(el('span', 'big', all.length ? '🔍' : '📄'));
+    empty.appendChild(el('div', null, all.length ? 'אין תוצאות לחיפוש הזה' : 'עוד לא שמרת קודים — הוסף את הראשון למעלה'));
+    list.appendChild(empty);
+    return;
+  }
+
+  items.forEach(item => {
+    const card = el('div', 'item');
+
+    const head = el('div', 'item-head');
+    head.appendChild(el('h3', 'item-title', item.exercise || '(ללא שם תרגיל)'));
+    const lang = (item.lang && item.lang !== 'auto') ? item.lang : detectLanguage(item.code);
+    head.appendChild(el('span', 'badge', lang === 'plain' ? 'טקסט' : lang.toUpperCase()));
+    card.appendChild(head);
+
+    const meta = el('div', 'meta');
+    meta.appendChild(el('span', null, 'נשמר: ' + formatDate(item.createdAt || item.id)));
+    if (item.updatedAt) meta.appendChild(el('span', null, '· עודכן: ' + formatDate(item.updatedAt)));
+    card.appendChild(meta);
+
+    const pre = el('pre', 'code');
+    highlightInto(pre, item.code, item.lang);
+    card.appendChild(pre);
+
+    const actions = el('div', 'actions');
+    actions.style.marginTop = '12px';
+    const copyBtn = el('button', 'ghost small', 'העתק');
+    copyBtn.type = 'button';
+    copyBtn.addEventListener('click', () => copyText(item.code));
+    const editBtn = el('button', 'ghost small', 'ערוך');
+    editBtn.type = 'button';
+    editBtn.addEventListener('click', () => startCodeEdit(item));
+    const delBtn = el('button', 'danger small', 'מחק');
+    delBtn.type = 'button';
+    delBtn.addEventListener('click', () => deleteCode(item.id));
+    actions.appendChild(copyBtn);
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
+    card.appendChild(actions);
+
+    list.appendChild(card);
+  });
+}
+
+/* =========================================================
+   שאלות ותשובות — לוח משותף, מחיקה רק לבעלים
+   ========================================================= */
+let onlyMineQuestions = false;
+
+function getQuestions() {
+  const questions = read(KEYS.questions, []);
+  if (!Array.isArray(questions)) return [];
+  // מיגרציה: פורמט ישן שמר תשובה בודדת כמחרוזת.
+  let changed = false;
+  questions.forEach(q => {
+    if (!Array.isArray(q.answers)) {
+      q.answers = (typeof q.answer === 'string' && q.answer.trim())
+        ? [{ id: q.id + 1, text: q.answer, author: q.owner || '', createdAt: q.id }]
+        : [];
+      delete q.answer;
+      changed = true;
+    }
+  });
+  if (changed) write(KEYS.questions, questions);
+  return questions;
+}
+
+function addQuestion(text) {
+  if (!text) { toast('יש לכתוב שאלה', true); return; }
+  const questions = getQuestions();
+  questions.push({ id: Date.now(), question: text, owner: currentUser, createdAt: Date.now(), answers: [] });
+  if (!write(KEYS.questions, questions)) return;
+  document.getElementById('questionInput').value = '';
+  toast('השאלה פורסמה');
+  renderQuestions();
+}
+
+function deleteQuestion(id) {
+  if (!confirm('למחוק את השאלה הזו ואת כל התשובות שלה?')) return;
+  const remaining = getQuestions().filter(q => !(q.id === id && q.owner === currentUser));
+  if (!write(KEYS.questions, remaining)) return;
+  toast('השאלה נמחקה');
+  renderQuestions();
+}
+
+function addAnswer(questionId, text) {
+  if (!text) { toast('יש לכתוב תשובה', true); return; }
+  const questions = getQuestions();
+  const question = questions.find(q => q.id === questionId);
+  if (!question) { toast('השאלה לא נמצאה', true); renderQuestions(); return; }
+  question.answers.push({ id: Date.now(), text, author: currentUser, createdAt: Date.now() });
+  if (!write(KEYS.questions, questions)) return;
+  toast('התשובה נוספה');
+  renderQuestions();
+}
+
+function deleteAnswer(questionId, answerId) {
+  const questions = getQuestions();
+  const question = questions.find(q => q.id === questionId);
+  if (!question) return;
+  const answer = question.answers.find(a => a.id === answerId);
+  if (!answer || answer.author !== currentUser) { toast('אפשר למחוק רק תשובה שכתבת', true); return; }
+  question.answers = question.answers.filter(a => a.id !== answerId);
+  if (!write(KEYS.questions, questions)) return;
+  toast('התשובה נמחקה');
+  renderQuestions();
+}
+
+function renderQuestions() {
+  const list = document.getElementById('questionsList');
+  const query = document.getElementById('questionSearch').value.trim().toLowerCase();
+  list.textContent = '';
+
+  let all = getQuestions().sort((a, b) => (b.createdAt || b.id) - (a.createdAt || a.id));
+  if (onlyMineQuestions) all = all.filter(q => q.owner === currentUser);
+  const items = query
+    ? all.filter(q => q.question.toLowerCase().includes(query) ||
+                      q.answers.some(a => a.text.toLowerCase().includes(query)))
+    : all;
+
+  document.getElementById('questionCount').textContent =
+    all.length ? (query ? items.length + ' מתוך ' + all.length : all.length + ' שאלות') : '';
+
+  if (!items.length) {
+    const empty = el('div', 'empty');
+    empty.appendChild(el('span', 'big', all.length ? '🔍' : '💬'));
+    empty.appendChild(el('div', null, all.length ? 'אין תוצאות לחיפוש הזה' : 'הלוח ריק — שאל/י את השאלה הראשונה'));
+    list.appendChild(empty);
+    return;
+  }
+
+  items.forEach(item => {
+    const card = el('div', 'item');
+
+    const head = el('div', 'item-head');
+    head.appendChild(el('h3', 'item-title', item.question));
+    if (item.owner === currentUser) head.appendChild(el('span', 'badge mine', 'שלי'));
+    card.appendChild(head);
+
+    const meta = el('div', 'meta');
+    meta.appendChild(el('span', null, 'נשאל על ידי ' + (item.owner || 'לא ידוע')));
+    meta.appendChild(el('span', null, '· ' + formatDate(item.createdAt || item.id)));
+    meta.appendChild(el('span', null, '· ' + item.answers.length + ' תשובות'));
+    card.appendChild(meta);
+
+    if (item.answers.length) {
+      const answers = el('div', 'answers');
+      item.answers.forEach(answer => {
+        const box = el('div', 'answer');
+        box.appendChild(el('div', null, answer.text));
+        const answerMeta = el('div', 'meta');
+        answerMeta.appendChild(el('span', null, (answer.author || 'לא ידוע') + ' · ' + formatDate(answer.createdAt)));
+        if (answer.author === currentUser) {
+          const del = el('button', 'danger small', 'מחק');
+          del.type = 'button';
+          del.addEventListener('click', () => deleteAnswer(item.id, answer.id));
+          answerMeta.appendChild(del);
+        }
+        box.appendChild(answerMeta);
+        answers.appendChild(box);
+      });
+      card.appendChild(answers);
+    }
+
+    const form = el('form', 'answer-form');
+    const input = el('input');
+    input.type = 'text';
+    input.placeholder = 'כתוב/כתבי תשובה...';
+    const send = el('button', 'small', 'שלח');
+    send.type = 'submit';
+    form.appendChild(input);
+    form.appendChild(send);
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      addAnswer(item.id, input.value.trim());
+    });
+    card.appendChild(form);
+
+    if (item.owner === currentUser) {
+      const actions = el('div', 'actions');
+      actions.style.marginTop = '10px';
+      const del = el('button', 'danger small', 'מחק שאלה');
+      del.type = 'button';
+      del.addEventListener('click', () => deleteQuestion(item.id));
+      actions.appendChild(del);
+      card.appendChild(actions);
+    }
+
+    list.appendChild(card);
+  });
+}
+
+/* =========================================================
+   חיווט האירועים
+   ========================================================= */
+function switchTab(name) {
+  const codes = name === 'codes';
+  document.getElementById('panelCodes').classList.toggle('hidden', !codes);
+  document.getElementById('panelQuestions').classList.toggle('hidden', codes);
+  document.getElementById('tabCodes').setAttribute('aria-selected', String(codes));
+  document.getElementById('tabQuestions').setAttribute('aria-selected', String(!codes));
+}
+
+document.getElementById('tabCodes').addEventListener('click', () => switchTab('codes'));
+document.getElementById('tabQuestions').addEventListener('click', () => switchTab('questions'));
+document.getElementById('tabLogin').addEventListener('click', showLogin);
+document.getElementById('tabSignup').addEventListener('click', showSignup);
+document.getElementById('goLogin').addEventListener('click', showLogin);
+document.getElementById('goSignup').addEventListener('click', showSignup);
+document.getElementById('logoutBtn').addEventListener('click', logout);
+
+document.getElementById('loginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  login(document.getElementById('loginUsername').value.trim(),
+        document.getElementById('loginPassword').value);
+});
+
+document.getElementById('signupForm').addEventListener('submit', e => {
+  e.preventDefault();
+  signup(document.getElementById('signupUsername').value.trim(),
+         document.getElementById('signupPassword').value,
+         document.getElementById('signupPasswordConfirm').value);
+});
+
+document.getElementById('codeForm').addEventListener('submit', e => {
+  e.preventDefault();
+  submitCode();
+});
+document.getElementById('codeCancelBtn').addEventListener('click', cancelCodeEdit);
+document.getElementById('codeSearch').addEventListener('input', renderCodes);
+
+document.getElementById('questionForm').addEventListener('submit', e => {
+  e.preventDefault();
+  addQuestion(document.getElementById('questionInput').value.trim());
+});
+document.getElementById('questionSearch').addEventListener('input', renderQuestions);
+document.getElementById('onlyMineBtn').addEventListener('click', e => {
+  onlyMineQuestions = !onlyMineQuestions;
+  e.currentTarget.setAttribute('aria-pressed', String(onlyMineQuestions));
+  e.currentTarget.textContent = onlyMineQuestions ? 'כל השאלות' : 'רק השאלות שלי';
+  renderQuestions();
+});
+
+// Tab בתוך תיבת הקוד מכניס הזחה במקום לקפוץ לשדה הבא.
+document.getElementById('codeInput').addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  e.preventDefault();
+  const ta = e.currentTarget;
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  ta.value = ta.value.slice(0, start) + '  ' + ta.value.slice(end);
+  ta.selectionStart = ta.selectionEnd = start + 2;
+});
+
+/* ---------- אתחול ---------- */
+initTheme();
+let savedSession = null;
+try { savedSession = localStorage.getItem(KEYS.session); } catch (e) {}
+if (savedSession && findUser(savedSession)) {
+  currentUser = findUser(savedSession).username;
+  enterApp();
+} else {
+  try { localStorage.removeItem(KEYS.session); } catch (e) {}
+  showLogin();
+}
+</script>
+</body>
+</html>
